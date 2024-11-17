@@ -109,6 +109,38 @@ def findNode(node: Node, val) -> Node:
     else: 
         # same value
         return node
+    
+def findParentNode(node: Node, val) -> Node:
+    if node is None:
+        return None
+    if val < node.val:
+        if node.lft is not None and node.lft.val == val:
+            return node
+        else:
+            return findParentNode(node.lft, val)
+    elif val > node.val:
+        if node.rgt is not None and node.rgt.val == val:
+            return node
+        else:
+            return findParentNode(node.rgt, val)
+    else:
+        # same value
+        return None
+    
+def redBlackInsertion(tree: Tree, val) -> Tree: 
+    treeStep1 = insertNodeIntoTree(tree, val)
+    # parent of new Node is black
+    parentNode = findParentNode(tree.root, val)
+    if parentNode.color == "black":
+        return treeStep1
+    # fixes required, find uncle node
+    opaNode = findParentNode(tree.root, parentNode.val)
+    if opaNode.val > parentNode.val:
+        uncleNode = opaNode.rgt
+    else:
+        uncleNode = opaNode.lft
+
+
 
 def testInsert():
     
