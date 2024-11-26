@@ -6,9 +6,8 @@ import sys
 Node = namedtuple("Node", ["value", "color", "left", "right"])
 Leaf = Node(value=None, color="black", left=None, right=None) 
 
-# TODO: make RBTree a named tuple
 class RBTree:
-    def __init__(self, root: Node):
+    def __init__(self, root: Node = Leaf):
         self.root = root
 
 def insertNode(node: Node, value, color="red") -> Node:
@@ -50,21 +49,18 @@ def findNode(node: Node, value) -> Node:
         # same value
         return node
 
-def findParentNode(node: Node, value) -> Node:
-    if node == Leaf:
-        return Leaf
-    if value < node.value:
-        if node.left != Leaf and node.left.value == value:
-            return node
-        else:
-            return findParentNode(node.left, value)
-    elif value > node.value:
-        if node.right != Leaf and node.right.value == value:
-            return node
-        else:
-            return findParentNode(node.right, value)
+def findParentInSide(node: Node, nodeSide: Node, value) -> Node:
+    if nodeSide.value == value:
+        return node
     else:
-        # same value, this is like None
+        return findParentNode(nodeSide, value)
+
+def findParentNode(node: Node, value) -> Node:
+    if value < node.value:
+        return findParentInSide(node, node.left, value)
+    elif value > node.value:
+        return findParentInSide(node, node.right, value)
+    else:
         return Leaf
     
 def findOpaNode(node: Node, value) -> Node:

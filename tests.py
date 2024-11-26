@@ -5,7 +5,8 @@ from main import *
 def test_FindOpaNode(): 
     print("testing opa node")
     # Arrange
-    tree = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 10, color="black")
     tree = insertNodeIntoTree(tree, 6)
     tree = insertNodeIntoTree(tree, 8)
     # Act
@@ -19,16 +20,19 @@ def test_FindOpaNode():
 
 def test_Compare2Trees():
     print("testing compare2Trees")
-    tree1 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree3 = insertNodeIntoTree(tree1, 5)
+    tree1 = RBTree()
+    tree2 = insertNodeIntoTree(tree1, 10, color="black")
+    tree3 = insertNodeIntoTree(tree2, 5)
     tree4 = insertNodeIntoTree(tree3, 7)
 
-    tree5 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree7 = insertNodeIntoTree(tree5, 5)
+    tree5 = RBTree()
+    tree6 = insertNodeIntoTree(tree5, 10, color="black")
+    tree7 = insertNodeIntoTree(tree6, 5)
     tree8 = insertNodeIntoTree(tree7, 7)
 
-    tree9 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree11 = insertNodeIntoTree(tree9, 4)
+    tree9 = RBTree()
+    tree10 = insertNodeIntoTree(tree9, 10, color="black")
+    tree11 = insertNodeIntoTree(tree10, 4)
     tree12 = insertNodeIntoTree(tree11, 7)
     assert(compare2Trees(tree4, tree8))
     assert(not compare2Trees(tree8, tree12))
@@ -37,11 +41,13 @@ def test_Compare2Trees():
 def test_Insert():
     
     print("testing insert")
-    tree1 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
+    tree1 = RBTree()
+    tree1 = insertNodeIntoTree(tree1, 10, color="black")
     tree2 = insertNodeIntoTree(tree1, 5)
     tree3 = insertNodeIntoTree(tree2, 7)
 
-    tree4 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
+    tree4 = RBTree()
+    tree4 = insertNodeIntoTree(tree4, 10, color="black")
     tree5 = insertNodeIntoTree(tree4, 5)
     tree6 = insertNodeIntoTree(tree5, 7)
     tree7 = insertNodeIntoTree(tree6, 5)
@@ -52,14 +58,16 @@ def test_Insert():
 def test_LeftRotate():
     print("testing left rotation")
     # Arrange
-    tree = RBTree(Node(value= 5, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 5, color="black")
     tree = insertNodeIntoTree(tree, 10, color="red")
     tree = insertNodeIntoTree(tree, 7, color="red")
     tree = insertNodeIntoTree(tree, 12, color="red")
     # Act
     lRotated = leftRotateNode(tree.root)
     # Assert
-    expectedTree =RBTree(Node(value=10, color="red", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, 10, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 5, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 12, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 7, color="red")
@@ -71,14 +79,16 @@ def test_RightRotate():
 
     print("testing right rotation")
     # Arrange
-    tree = RBTree(Node(value= 15, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 15, color="black")
     tree = insertNodeIntoTree(tree, 10, color="red")
     tree = insertNodeIntoTree(tree, 7, color="red")
     tree = insertNodeIntoTree(tree, 12, color="red")
     # Act
     rRotated = rightRotateNode(tree.root)
     # Assert
-    expectedTree =RBTree(Node(value=10, color="red", left=Leaf, right=Leaf))
+    expectedTree =RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, 10, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 15, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 12, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 7, color="red")
@@ -88,7 +98,8 @@ def test_RightRotate():
 def test_fixCaseSR_correct():
     print("testing fixCase_SR")
     # Arrange
-    tree = RBTree(Node(value=23, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 23, color="black")
     tree = insertNodeIntoTree(tree, 11)
     tree = insertNodeIntoTree(tree, 37)
     insertedValue = 7
@@ -99,7 +110,8 @@ def test_fixCaseSR_correct():
     fixedNode = fixCase_SR(node)
 
     # Assert
-    expectedTree = RBTree(Node(value=23, color="red", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, 23, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 11, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 37, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, insertedValue, color="red")
@@ -108,7 +120,8 @@ def test_fixCaseSR_correct():
 def test_fixCasePLSBIR_correct():
     print("testing fixCase_PL_SB_IR")
     #Arrange
-    tree = RBTree(Node(value=11, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 11, color="black")
     tree = insertNodeIntoTree(tree, 7)
     insertedValue = 8
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -118,7 +131,8 @@ def test_fixCasePLSBIR_correct():
     fixedNode = fixCase_PL_SB_IR(node)
 
     # Assert
-    expectedTree = RBTree(Node(value=insertedValue, color="black", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, insertedValue, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 11, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 7, color="red")
     
@@ -127,7 +141,8 @@ def test_fixCasePLSBIR_correct():
 def test_fixCasePLSBIL_correct():
     print("testing fixCase_PL_SB_IL")
     #Arrange
-    tree = RBTree(Node(value=11, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 11, color="black")
     tree = insertNodeIntoTree(tree, 8)
     insertedValue = 7
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -137,7 +152,8 @@ def test_fixCasePLSBIL_correct():
     fixedNode = fixCase_PL_SB_IL(node)
 
     # Assert
-    expectedTree = RBTree(Node(value=8, color="black", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, 8, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 11, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, insertedValue, color="red")
     
@@ -146,7 +162,8 @@ def test_fixCasePLSBIL_correct():
 def test_fixCasePRSBIL_correct():
     print("testing fixCase_PR_SB_IL")
     #Arrange
-    tree = RBTree(Node(value=37, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 37, color="black")
     tree = insertNodeIntoTree(tree, 41)
     insertedValue = 39
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -156,7 +173,8 @@ def test_fixCasePRSBIL_correct():
     fixedNode = fixCase_PR_SB_IL(node)
 
     # Assert
-    expectedTree = RBTree(Node(value=insertedValue, color="black", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, insertedValue, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 37, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 41, color="red")
     
@@ -165,7 +183,8 @@ def test_fixCasePRSBIL_correct():
 def test_fixCasePRSBIR_correct():
     print("testing fixCase_PR_SB_IR")
     #Arrange
-    tree = RBTree(Node(value=37, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 37, color="black")
     tree = insertNodeIntoTree(tree, 39)
     insertedValue = 41
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -175,7 +194,8 @@ def test_fixCasePRSBIR_correct():
     fixedNode = fixCase_PR_SB_IR(node)
 
     # Assert
-    expectedTree = RBTree(Node(value=39, color="black", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, 39, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 37, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, insertedValue, color="red")
     
@@ -184,7 +204,8 @@ def test_fixCasePRSBIR_correct():
 def test_assessNode_SR():
     print("testing assessNode with SR outcome")
     # Arrange
-    tree = RBTree(Node(value=23, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 23, color="black")
     tree = insertNodeIntoTree(tree, 11)
     tree = insertNodeIntoTree(tree, 37)
     insertedValue = 7
@@ -199,7 +220,8 @@ def test_assessNode_SR():
 def test_assessNode_PLSBIR():
     print("testing assessNode with PL_SB_IR outcome")
     #Arrange
-    tree = RBTree(Node(value=11, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 11, color="black")
     tree = insertNodeIntoTree(tree, 7)
     insertedValue = 8
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -212,7 +234,8 @@ def test_assessNode_PLSBIR():
 def test_assessNode_PLSBIL():
     print("testing assessNode with PL_SB_IL outcome")
     #Arrange
-    tree = RBTree(Node(value=11, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 11, color="black")
     tree = insertNodeIntoTree(tree, 8)
     insertedValue = 7
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -225,7 +248,8 @@ def test_assessNode_PLSBIL():
 def test_assessNode_PRSBIR():
     print("testing assessNode with PR_SB_IR outcome")
     #Arrange
-    tree = RBTree(Node(value=37, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 37, color="black")
     tree = insertNodeIntoTree(tree, 39)
     insertedValue = 41
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -238,7 +262,8 @@ def test_assessNode_PRSBIR():
 def test_assessNode_PRSBIL():
     print("testing assessNode with PR_SB_IL outcome")
     #Arrange
-    tree = RBTree(Node(value=37, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 37, color="black")
     tree = insertNodeIntoTree(tree, 41)
     insertedValue = 39
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -251,7 +276,8 @@ def test_assessNode_PRSBIL():
 def test_assessNode_NothingToFix():
     print("testing assessNode with NothingToFix outcome")
     #Arrange
-    tree = RBTree(Node(value=37, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 37, color="black")
     tree = insertNodeIntoTree(tree, 41, color="black")
     insertedValue = 44
     tree = insertNodeIntoTree(tree, insertedValue)
@@ -264,7 +290,8 @@ def test_assessNode_NothingToFix():
 def test_assessNode_RedRoot():
     print("testing assessNode with RedRoot outcome")
     #Arrange
-    tree = RBTree(Node(value=37, color="red", left=Leaf, right=Leaf))
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 37, color="red")
 
     # Act
     assessment = assessNode(tree.root, 37)
@@ -274,14 +301,16 @@ def test_assessNode_RedRoot():
 def test_insertNodeIntoRBTree_3Insertions():
     print("testing insertNodeIntoRBTree 3 insertions")
     # Arrange
-    tree = RBTree(Node(value=23, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
     # Act
+    tree = insertNodeIntoTree(tree, 23, color="black")
     tree = insertNodeIntoRBTree(tree, 11)
     tree = insertNodeIntoRBTree(tree, 37)
     tree = insertNodeIntoRBTree(tree, 7)
 
     # Assert
-    expectedTree = RBTree(Node(value=23, color="black", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, 23, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 37, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 11, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 7, color="red")
@@ -290,20 +319,60 @@ def test_insertNodeIntoRBTree_3Insertions():
 def test_insertNodeIntoRBTree_4Insertions():
     print("testing insertNodeIntoRBTree 4 insertions")
     # Arrange
-    tree = RBTree(Node(value=23, color="black", left=Leaf, right=Leaf))
+    tree = RBTree()
     # Act
+    tree = insertNodeIntoRBTree(tree, 23)
     tree = insertNodeIntoRBTree(tree, 11)
     tree = insertNodeIntoRBTree(tree, 37)
     tree = insertNodeIntoRBTree(tree, 7)
     tree = insertNodeIntoRBTree(tree, 9)
 
     # Assert
-    expectedTree = RBTree(Node(value=23, color="black", left=Leaf, right=Leaf))
+    expectedTree = RBTree()
+    expectedTree = insertNodeIntoTree(expectedTree, 23, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 37, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 9, color="black")
     expectedTree = insertNodeIntoTree(expectedTree, 7, color="red")
     expectedTree = insertNodeIntoTree(expectedTree, 11, color="red")
     assert(compare2Trees(tree, expectedTree))
+
+def test_tokenize_correct():
+    print("testing tokenize")
+    # Arrange
+    text = "This, is an example text!"
+
+    # Act
+    words = tokenize(text)
+
+    # Assert
+    expected = ["this", "is", "an", "example", "text"]
+    assert(words == expected)
+
+def test_InOrderTraversal():
+    print("testing in order traversal")
+    # Arrange
+    tree = RBTree()
+    tree = insertNodeIntoTree(tree, 15)
+    tree = insertNodeIntoTree(tree, 10)
+    tree = insertNodeIntoTree(tree, 7)
+    tree = insertNodeIntoTree(tree, 12)
+    # Act
+    values = inOrderTraversal(tree.root)
+    # Assert
+    expected = [7, 10, 12, 15]
+    assert(expected == values)
+
+def test_handleInput_CatchException():
+    print("testing that exceptions are raised for unexpected inputs")
+    # Arrange
+    sys.argv = ["main.py"]
+    # Act
+    try:
+        handleInput()
+        assert(False)
+    except ValueError:
+        assert(True)
+
 
 if __name__ == "__main__":
     test_Insert()
@@ -325,3 +394,6 @@ if __name__ == "__main__":
     test_assessNode_RedRoot()
     test_insertNodeIntoRBTree_3Insertions()
     test_insertNodeIntoRBTree_4Insertions()
+    test_tokenize_correct()
+    test_InOrderTraversal()
+    test_handleInput_CatchException()
