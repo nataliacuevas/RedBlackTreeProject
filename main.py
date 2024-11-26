@@ -166,6 +166,23 @@ def FullFixCase1(root: Node, value) -> Node:
     else: # not case 1 
         return root
     
+#    Case 2: Rotation and Recoloring
+# If the new node’s uncle is black and the new node is the right child of a left child (or vice versa),
+#  perform a rotation to move the new node up and align it.
+
+# If the new node’s uncle is black and the new node is the left child of a left child (or right of a right), 
+# perform a rotation and recolor the parent and grandparent to fix the violation.
+
+def fixCase2(root: Node, value) -> Node:
+    parentNode = findParentNode(root, value)
+    opaNode = findOpaNode(root, value)
+    
+
+    uncleNode = opaNode.
+    if paren
+
+    return root
+
 def testFullFixCase1():
     print("testing full fix case 1")
     tree = RBTree(Node(value=50, color="black", left=Leaf, right=Leaf))
