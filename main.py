@@ -1,5 +1,6 @@
 from collections import namedtuple
 import re
+import sys
 
 # Define the Red-Black Tree Node as an immutable namedtuple
 Node = namedtuple("Node", ["value", "color", "left", "right"])
@@ -84,11 +85,8 @@ def findSiblingNode(node: Node, value) -> Node:
 def compareNodes(node1: Node, node2: Node) -> bool:
     if node1 == Leaf and node2 == Leaf: 
         return True
-
-    # If one of the nodes is Leaf or their values/colors don't match
     if node1.value != node2.value or node1.color != node2.color:
         return False
-
     # Recursively compare left and right subtrees
     return (compareNodes(node1.left, node2.left) and
             compareNodes(node1.right, node2.right))
@@ -203,9 +201,16 @@ def writeOutput(file_path, sorted_words):
     with open(file_path, 'w', encoding='utf-8') as file:
         file.write("\n".join(sorted_words))
 
+def handleInput() -> str:
+    if len(sys.argv) != 2:
+        raise ValueError("The script requires a filename to read from, please input it")
+    return sys.argv[1]
+
 def main():
+    filename = handleInput()
+
     print("Reading file and tokenizing")
-    text = process_file("war_and_peace.txt")
+    text = process_file(filename)
     words = tokenize(text)
 
     print("Inserting words into Red Black Tree")
