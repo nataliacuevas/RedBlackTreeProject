@@ -1,4 +1,5 @@
 from collections import namedtuple
+import re
 
 # Define the Red-Black Tree Node as an immutable namedtuple
 Node = namedtuple("Node", ["value", "color", "left", "right"])
@@ -120,7 +121,7 @@ def compareNodes(node1: Node, node2: Node) -> bool:
         return True
 
     # If one of the nodes is Leaf or their values/colors don't match
-    if node1 == Leaf or node2 == Leaf or node1 != node2:
+    if node1 == Leaf or node2 == Leaf or node1.value != node2.value or node1.color != node2.color:
         return False
 
     # Recursively compare left and right subtrees
@@ -140,6 +141,8 @@ def case1(node: Node, value) -> bool:
         return False
 
 def fixCase1(node: Node, opaValue) ->  Node:
+    # this fn assumes there is a case 1 to fix
+
     if node.value == opaValue:
         newLeftChild = node.left._replace(color="black")
         newRightChild = node.right._replace(color="black")
@@ -166,22 +169,139 @@ def FullFixCase1(root: Node, value) -> Node:
     else: # not case 1 
         return root
     
-#    Case 2: Rotation and Recoloring
-# If the new node’s uncle is black and the new node is the right child of a left child (or vice versa),
-#  perform a rotation to move the new node up and align it.
 
-# If the new node’s uncle is black and the new node is the left child of a left child (or right of a right), 
-# perform a rotation and recolor the parent and grandparent to fix the violation.
-
-def fixCase2(root: Node, value) -> Node:
-    parentNode = findParentNode(root, value)
-    opaNode = findOpaNode(root, value)
+def isRightChild(root: Node, value) -> bool:
+    parent = findParentNode(root, value)
+    if parent == Leaf: 
+        return False 
+    if value > parent.value:
+        return True
+    else: 
+        return False
     
+def case2(node: Node, value) -> bool:
+    parent = findParentNode(node, value) 
+    uncle = findSiblingNode(node, parent.value)
+    if uncle.color == "black":
+        return True
+    else:
+        return False
 
-    uncleNode = opaNode.
-    if paren
+def fixCase2Old(root: Node, value) -> Node:
 
-    return root
+    opa = findOpaNode(root, value)
+    parent = findParentNode(root, value)
+    uncle = findSiblingNode(root, parent.value)
+
+    if opa == Leaf:
+        return root # no grandpa case 
+    # uncle is black and node is right-child 
+    if (isRightChild(root, value)) and uncle.color == "black":
+        lRotatedParent = leftRotateNode(parent)
+        return lRotatedParent
+    # uncle is black and node is left-child 
+    elif(isRightChild(root, value) != True) and uncle.color == "black":
+        rRotatedOpa = rightRotateNode(opa)
+        return rRotatedOpa
+    else: # not case 2
+        return root 
+    # Todo: recolor appropiately 
+
+def fixCase2(node: Node, value, opaValue) -> Node:
+    # this fn assumes there is a case 2 to fix
+    if node.value < opaValue:
+        return node._replace(right= fixCase2(node.right, value, opaValue))
+    elif node.value > opaValue:
+        return node._replace(left= fixCase2(node.left, value, opaValue))
+    else: # node is the opavalue
+        if value < opaValue and value < node.left.value:
+            rRotated = rightRotateNode(node)
+
+# Case 1&4: Sibling of parent red
+def fixCase_SR(opaNode: Node) -> Node:
+    recolorLeft = opaNode.left._replace(color="black")
+    recolorRight = opaNode.right._replace(color="black")
+    return opaNode._replace(left=recolorLeft, right=recolorRight, color="red")
+
+# Case 2: Parent is left Child, Sibling of parent black, Inserted node right child
+def fixCase_PL_SB_IR(opaNode: Node) -> Node:
+    # transfer case 2 to case 3
+    intermediateOpa = opaNode._replace(left=leftRotateNode(opaNode.left))
+    return fixCase_PL_SB_IL(intermediateOpa)
+
+# Case 3: Parent is left Child, Sibling of parent black, Inserted node left child
+def fixCase_PL_SB_IL(opaNode: Node) -> Node:
+    recolorParent = opaNode.left._replace(color="black")
+    newOpa = opaNode._replace(color="red", left=recolorParent)
+    return rightRotateNode(newOpa)
+
+# Case 5: Parent is right Child, Sibling of parent black, Inserted node left child
+def fixCase_PR_SB_IL(opaNode: Node) -> Node:
+    # transfer case 5 to 6
+    intermediateOpa = opaNode._replace(right=rightRotateNode(opaNode.right))
+    return fixCase_PR_SB_IR(intermediateOpa)
+
+# Case 6: Parent is right Child, Sibling of parent black, Inserted node right child
+def fixCase_PR_SB_IR(opaNode: Node) -> Node:
+    recolorParent = opaNode.right._replace(color="black")
+    recolorOpa = opaNode._replace(color="red", right=recolorParent)
+    return leftRotateNode(recolorOpa)
+
+
+# Assess the node and returns the grandparent node and the case
+def assessNode(root: Node, fixValue) -> str:
+    parentNode = findParentNode(root, fixValue)
+    if fixValue == root.value and root.color == "red":
+        return "RedRoot"
+    if parentNode.color == "red":
+        opaNode = findParentNode(root, parentNode.value)
+        siblingNode = findSiblingNode(root, parentNode.value)
+        if siblingNode.color == "red":
+            return "fixCase_SR"
+        else:
+            if parentNode.value < opaNode.value:
+                if parentNode.value < fixValue:
+                    return "fixCase_PL_SB_IR"
+                else:
+                    return "fixCase_PL_SB_IL"
+            else:
+                if parentNode.value < fixValue:
+                    return "fixCase_PR_SB_IR"
+                else:
+                    return "fixCase_PR_SB_IL"
+    return "NothingToFix"
+
+def applyInsertionFix(node: Node, opaNode: Node, fixFunction) -> Node:
+    if opaNode.value < node.value:
+        return node._replace(left=applyInsertionFix(node.left, opaNode, fixFunction))
+    elif opaNode.value > node.value:
+        return node._replace(right=applyInsertionFix(node.right, opaNode, fixFunction))
+    else: # We are at the grandparent!
+        return fixFunction(opaNode)
+
+# To help us map between cases and functions
+fixDictionary = {"fixCase_SR": fixCase_SR,
+                 "fixCase_PL_SB_IR": fixCase_PL_SB_IR,
+                 "fixCase_PL_SB_IL": fixCase_PL_SB_IL,
+                 "fixCase_PR_SB_IR": fixCase_PR_SB_IR,
+                 "fixCase_PR_SB_IL": fixCase_PR_SB_IL
+                 }
+
+def fixInsertion(root: Node, fixValue) -> Node:
+    assessment = assessNode(root, fixValue)
+    if assessment == "RedRoot":
+        return root._replace(color="black")
+    elif assessment == "NothingToFix":
+        return root
+    opaNode = findOpaNode(root,  fixValue)
+    fixFunction = fixDictionary[assessment]
+    newRoot = applyInsertionFix(root, opaNode, fixFunction)
+    # repeat the process on the grandpa node
+    return fixInsertion(newRoot, opaNode.value)
+
+def insertNodeIntoRBTree(tree: RBTree, value) -> RBTree:
+    insertionRoot = insertNode(tree.root, value)
+    return RBTree(fixInsertion(insertionRoot, value))
 
 def testFullFixCase1():
     print("testing full fix case 1")
@@ -295,15 +415,40 @@ def testRightRotate():
                 
     assert(compareNodes(rRotated, expectedTree.root))
 
+def tokenize(text):
+    #Tokenize text into words, removing punctuation and converting to lowercase
+    return re.findall(r'\b[a-zA-Z]+\b', text.lower())
+
+def process_file(file_path):
+    #Read the file and return its content
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read()
+
+def inOrderTraversal(node: Node) -> list[str]:
+    if node == Leaf:
+        return []
+    return inOrderTraversal(node.left) + [node.value] + inOrderTraversal(node.right)
+
+def writeOutput(file_path, sorted_words):
+    #Write the sorted words to the output file
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write("\n".join(sorted_words))
 
 def main():
+    print("Reading file and tokenizing")
+    text = process_file("war_and_peace.txt")
+    words = tokenize(text)
 
-    testInsert()
-    testCompare2Trees()
-    testFindOpaNode()
-    testLeftRotate()
-    testRightRotate()
-    testFullFixCase1()
+    print("Inserting words into Red Black Tree")
+    tree = RBTree(Leaf)
+    for word in words:
+        tree = insertNodeIntoRBTree(tree, word)
+
+    print("Getting sorted list of words")
+    sortedWords = inOrderTraversal(tree.root)
+
+    print("Writing output to output.txt file")
+    writeOutput("output.txt", sortedWords)
 
 
 if __name__ == "__main__":
