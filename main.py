@@ -5,26 +5,12 @@ import re
 Node = namedtuple("Node", ["value", "color", "left", "right"])
 Leaf = Node(value=None, color="black", left=None, right=None) 
 
+# TODO: make RBTree a named tuple
 class RBTree:
     def __init__(self, root: Node):
         self.root = root
 
-    
-def printNode(node: Node) -> None:
-    if node == Leaf: 
-        print("Leaf")
-    else:
-        print(node.value, node.color)
-        printNode(node.left)
-        printNode(node.right)
-
-
-def printTree(tree: RBTree) -> None:
-    printNode(tree.root)
-    print("*" * 80)
-
 def insertNode(node: Node, value, color="red") -> Node:
-    # new inserted node is always red
     if node == Leaf:
         return  Node(value=value, color=color, left=Leaf, right=Leaf)
     elif node.value > value:
@@ -34,7 +20,6 @@ def insertNode(node: Node, value, color="red") -> Node:
     else:
         # repeated values are discarded
         return node
-
 
 def insertNodeIntoTree(tree: RBTree, value, color="red") -> RBTree:
     return RBTree(insertNode(tree.root, value, color))
@@ -64,7 +49,6 @@ def findNode(node: Node, value) -> Node:
         # same value
         return node
 
-
 def findParentNode(node: Node, value) -> Node:
     if node == Leaf:
         return Leaf
@@ -82,7 +66,6 @@ def findParentNode(node: Node, value) -> Node:
         # same value, this is like None
         return Leaf
     
-    
 def findOpaNode(node: Node, value) -> Node:
     parent = findParentNode(node, value)
     if parent == Leaf:
@@ -98,30 +81,12 @@ def findSiblingNode(node: Node, value) -> Node:
     else:
         return parentNode.left
 
-""" 
-def redBlackInsertion(tree: Tree, val) -> Tree: 
-    treeStep1 = insertNodeIntoTree(tree, val)
-    # parent of new Node is black
-    parentNode = findParentNode(tree.root, val)
-    if parentNode.color == "black":
-        return treeStep1
-    # fixes required, find uncle node
-    opaNode = findParentNode(tree.root, parentNode.val)
-    if opaNode.val > parentNode.val:
-        uncleNode = opaNode.rgt
-    else:
-        uncleNode = opaNode.lft
-
-"""
-# https://www.geeksforgeeks.org/red-black-tree-in-python/
-
-
 def compareNodes(node1: Node, node2: Node) -> bool:
     if node1 == Leaf and node2 == Leaf: 
         return True
 
     # If one of the nodes is Leaf or their values/colors don't match
-    if node1 == Leaf or node2 == Leaf or node1.value != node2.value or node1.color != node2.color:
+    if node1.value != node2.value or node1.color != node2.color:
         return False
 
     # Recursively compare left and right subtrees
@@ -131,91 +96,7 @@ def compareNodes(node1: Node, node2: Node) -> bool:
 def compare2Trees(tree1: RBTree, tree2: RBTree) -> bool:
     return compareNodes(tree1.root, tree2.root)
 
-def case1(node: Node, value) -> bool:
-    parent = findParentNode(node, value) 
-    uncle = findSiblingNode(node, parent.value)
-
-    if parent.color == "red" and uncle.color == "red":
-        return True
-    else:
-        return False
-
-def fixCase1(node: Node, opaValue) ->  Node:
-    # this fn assumes there is a case 1 to fix
-
-    if node.value == opaValue:
-        newLeftChild = node.left._replace(color="black")
-        newRightChild = node.right._replace(color="black")
-        return Node(value=node.value, color="red", left=newLeftChild, right=newRightChild)
-    
-    if node.value < opaValue: 
-        return Node(value=node.value, color=node.color, left=node.left, right=fixCase1(node.right, opaValue))
-      #  return node._replace(right=fixCase1(node.right, opaValue))
-
-    else: 
-        return Node(value=node.value, color=node.color, left=fixCase1(node.left, opaValue), right=node.right)
-      #  return node._replace(left=fixCase1(node.left, opaValue))
-
-def FullFixCase1(root: Node, value) -> Node:
-   #  if case1(node, value): 
-    opa = findOpaNode(root, value)
-
-    if opa == Leaf:
-        return root # no grandpa case 
-    if opa.left.color == "red" and opa.right.color == "red":
-        newNode = fixCase1(root, opa.value)
-        newRoot = FullFixCase1(newNode, opa.value)
-        return newRoot._replace(color="black")
-    else: # not case 1 
-        return root
-    
-
-def isRightChild(root: Node, value) -> bool:
-    parent = findParentNode(root, value)
-    if parent == Leaf: 
-        return False 
-    if value > parent.value:
-        return True
-    else: 
-        return False
-    
-def case2(node: Node, value) -> bool:
-    parent = findParentNode(node, value) 
-    uncle = findSiblingNode(node, parent.value)
-    if uncle.color == "black":
-        return True
-    else:
-        return False
-
-def fixCase2Old(root: Node, value) -> Node:
-
-    opa = findOpaNode(root, value)
-    parent = findParentNode(root, value)
-    uncle = findSiblingNode(root, parent.value)
-
-    if opa == Leaf:
-        return root # no grandpa case 
-    # uncle is black and node is right-child 
-    if (isRightChild(root, value)) and uncle.color == "black":
-        lRotatedParent = leftRotateNode(parent)
-        return lRotatedParent
-    # uncle is black and node is left-child 
-    elif(isRightChild(root, value) != True) and uncle.color == "black":
-        rRotatedOpa = rightRotateNode(opa)
-        return rRotatedOpa
-    else: # not case 2
-        return root 
-    # Todo: recolor appropiately 
-
-def fixCase2(node: Node, value, opaValue) -> Node:
-    # this fn assumes there is a case 2 to fix
-    if node.value < opaValue:
-        return node._replace(right= fixCase2(node.right, value, opaValue))
-    elif node.value > opaValue:
-        return node._replace(left= fixCase2(node.left, value, opaValue))
-    else: # node is the opavalue
-        if value < opaValue and value < node.left.value:
-            rRotated = rightRotateNode(node)
+# Reference: https://www.formosa1544.com/2021/04/30/build-the-forest-in-python-series-red-black-tree/#2-build-red-black-tree
 
 # Case 1&4: Sibling of parent red
 def fixCase_SR(opaNode: Node) -> Node:
@@ -302,118 +183,6 @@ def fixInsertion(root: Node, fixValue) -> Node:
 def insertNodeIntoRBTree(tree: RBTree, value) -> RBTree:
     insertionRoot = insertNode(tree.root, value)
     return RBTree(fixInsertion(insertionRoot, value))
-
-def testFullFixCase1():
-    print("testing full fix case 1")
-    tree = RBTree(Node(value=50, color="black", left=Leaf, right=Leaf))
-    tree = insertNodeIntoTree(tree, 40)
-    tree = insertNodeIntoTree(tree, 70)
-    tree = insertNodeIntoTree(tree, 80, color="black")
-    tree = insertNodeIntoTree(tree, 75)
-    tree = insertNodeIntoTree(tree, 90)
-    tree = insertNodeIntoTree(tree, 100)
-
-    fixedRoot = FullFixCase1(tree.root, 100)
-    expectedTree = RBTree(Node(value=50, color="black", left=Leaf, right=Leaf))
-    expectedTree = insertNodeIntoTree(expectedTree, 40, color="black")
-    expectedTree = insertNodeIntoTree(expectedTree, 70, color="black")
-    expectedTree = insertNodeIntoTree(expectedTree, 80, color="red")
-    expectedTree = insertNodeIntoTree(expectedTree, 75, color="black")
-    expectedTree = insertNodeIntoTree(expectedTree, 90, color="black")
-    expectedTree = insertNodeIntoTree(expectedTree, 100)
-
-    unexpectedTree = RBTree(Node(value=50, color="black", left=Leaf, right=Leaf))
-    unexpectedTree = insertNodeIntoTree(unexpectedTree, 40, color="black")
-    unexpectedTree = insertNodeIntoTree(unexpectedTree, 70, color="black")
-    unexpectedTree = insertNodeIntoTree(unexpectedTree, 80, color="black")
-    unexpectedTree = insertNodeIntoTree(unexpectedTree, 75, color="black")
-    unexpectedTree = insertNodeIntoTree(unexpectedTree, 90, color="black")
-    unexpectedTree = insertNodeIntoTree(unexpectedTree, 100)
-    assert(not compareNodes(fixedRoot, unexpectedTree.root))
-
-
-    
-
-
-
-def testFindOpaNode(): 
-    print("testing opa node")
-    tree = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree = insertNodeIntoTree(tree, 6)
-    tree = insertNodeIntoTree(tree, 8)
-    opa = findOpaNode(tree.root, 8)
-    parent = findParentNode(tree.root, 8)
-    
-    assert(opa == tree.root)
-    assert(opa != parent)
-    assert(parent == opa.left)
-
-
-def testCompare2Trees():
-
-    print("testing compare2Trees")
-    tree1 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree3 = insertNodeIntoTree(tree1, 5)
-    tree4 = insertNodeIntoTree(tree3, 7)
-
-    tree5 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree7 = insertNodeIntoTree(tree5, 5)
-    tree8 = insertNodeIntoTree(tree7, 7)
-
-    tree9 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree11 = insertNodeIntoTree(tree9, 4)
-    tree12 = insertNodeIntoTree(tree11, 7)
-
-    assert(compare2Trees(tree4, tree8))
-    assert(not compare2Trees(tree8, tree12))
-
-
-def testInsert():
-    
-    print("testing insert")
-    tree1 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree2 = insertNodeIntoTree(tree1, 5)
-    tree3 = insertNodeIntoTree(tree2, 7)
-
-    tree4 = RBTree(Node(value=10, color="black", left=Leaf, right=Leaf))
-    tree5 = insertNodeIntoTree(tree4, 5)
-    tree6 = insertNodeIntoTree(tree5, 7)
-    tree7 = insertNodeIntoTree(tree6, 5)
-
-    assert(compare2Trees(tree7, tree3))
-       
-
-def testLeftRotate():
-    print("testing left rotation")
-    tree = RBTree(Node(value= 5, color="black", left=Leaf, right=Leaf))
-    tree = insertNodeIntoTree(tree, 10, color="red")
-    tree = insertNodeIntoTree(tree, 7, color="red")
-    tree = insertNodeIntoTree(tree, 12, color="red")
-
-    lRotated = leftRotateNode(tree.root)
-    expectedTree =RBTree(Node(value=10, color="red", left=Leaf, right=Leaf))
-    expectedTree = insertNodeIntoTree(expectedTree, 5, color="black")
-    expectedTree = insertNodeIntoTree(expectedTree, 12, color="red")
-    expectedTree = insertNodeIntoTree(expectedTree, 7, color="red")
-                    
-    assert(compareNodes(lRotated, expectedTree.root))
-
-
-def testRightRotate():
-
-    print("testing right rotation")
-    tree = RBTree(Node(value= 15, color="black", left=Leaf, right=Leaf))
-    tree = insertNodeIntoTree(tree, 10, color="red")
-    tree = insertNodeIntoTree(tree, 7, color="red")
-    tree = insertNodeIntoTree(tree, 12, color="red")
-
-    rRotated = rightRotateNode(tree.root)
-    expectedTree =RBTree(Node(value=10, color="red", left=Leaf, right=Leaf))
-    expectedTree = insertNodeIntoTree(expectedTree, 15, color="black")
-    expectedTree = insertNodeIntoTree(expectedTree, 12, color="red")
-    expectedTree = insertNodeIntoTree(expectedTree, 7, color="red")
-                
-    assert(compareNodes(rRotated, expectedTree.root))
 
 def tokenize(text):
     #Tokenize text into words, removing punctuation and converting to lowercase
